@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Partners — Signature Generator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background-color: #EDEBE9;
+      color: #171212;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background-color: #171212;
+      border-bottom: 2px solid #D13119;
+      padding: 20px 48px;
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+    }
+    header h1 {
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: -0.04em;
+      color: #FFFFFF;
+    }
+    header span {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #706F6B;
+    }
+
+    /* ── Main layout ── */
+    main {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      min-height: calc(100vh - 62px);
+    }
+
+    /* ── Form panel ── */
+    .form-panel {
+      background-color: #FFFFFF;
+      border-right: 1px solid #C3C1BB;
+      padding: 40px 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .panel-title {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #93918A;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #EDEBE9;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    label {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 9px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #93918A;
+    }
+
+    input {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 13px;
+      color: #171212;
+      background: #FFFFFF;
+      border: 1px solid #C3C1BB;
+      border-radius: 3px;
+      padding: 9px 12px;
+      outline: none;
+      transition: border-color 0.15s ease;
+      width: 100%;
+    }
+    input::placeholder { color: #C3C1BB; }
+    input:focus { border-color: #D13119; }
+
+    .field-hint {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #C3C1BB;
+    }
+
+    .form-footer {
+      margin-top: auto;
+      padding-top: 28px;
+      border-top: 1px solid #EDEBE9;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .btn-copy {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0;
+      background-color: #D13119;
+      color: #FFFFFF;
+      border: 1px solid #D13119;
+      border-radius: 3px;
+      padding: 11px 12px;
+      cursor: pointer;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+      text-align: center;
+    }
+    .btn-copy:hover { background-color: #370100; border-color: #370100; }
+    .btn-copy.copied { background-color: #370100; border-color: #370100; }
+
+    .btn-secondary {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0;
+      background-color: #FFFFFF;
+      color: #171212;
+      border: 1px solid #C3C1BB;
+      border-radius: 3px;
+      padding: 11px 12px;
+      cursor: pointer;
+      transition: border-color 0.15s ease, color 0.15s ease;
+      text-align: center;
+    }
+    .btn-secondary:hover { border-color: #171212; }
+    .btn-secondary.copied { border-color: #171212; color: #706F6B; }
+
+    .copy-note {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #C3C1BB;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    /* ── Preview panel ── */
+    .preview-panel {
+      padding: 40px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .preview-label {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #93918A;
+    }
+
+    .email-chrome {
+      background: #FFFFFF;
+      border: 1px solid #C3C1BB;
+      border-radius: 4px;
+      overflow: hidden;
+      max-width: 600px;
+    }
+
+    .email-chrome-bar {
+      background: #EDEBE9;
+      border-bottom: 1px solid #C3C1BB;
+      padding: 10px 16px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-r { background: #C3C1BB; }
+    .dot-y { background: #C3C1BB; }
+    .dot-g { background: #C3C1BB; }
+
+    .email-body {
+      padding: 32px 32px 0 32px;
+    }
+
+    .email-body-text {
+      font-size: 13px;
+      color: #171212;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .email-body-text span {
+      color: #C3C1BB;
+    }
+
+    .sig-divider {
+      border: none;
+      border-top: 1px solid #EDEBE9;
+      margin: 0 0 24px 0;
+    }
+
+    #sig-preview-wrapper {
+      padding-bottom: 32px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Product Partners</h1>
+    <span>Email Signature Generator</span>
+  </header>
+
+  <main>
+
+    <!-- ── Form ── -->
+    <aside class="form-panel">
+
+      <div class="panel-title">Your details</div>
+
+      <div class="field">
+        <label for="f-name">Full Name</label>
+        <input id="f-name" type="text" placeholder="Brennan Borgestad" autocomplete="name">
+      </div>
+
+      <div class="field">
+        <label for="f-title">Title</label>
+        <input id="f-title" type="text" placeholder="Head of Partnerships" autocomplete="organization-title">
+      </div>
+
+      <div class="field">
+        <label for="f-email">Email</label>
+        <input id="f-email" type="email" placeholder="you@productschool.com" autocomplete="email">
+      </div>
+
+      <div class="field">
+        <label for="f-phone">Phone / WhatsApp</label>
+        <input id="f-phone" type="tel" placeholder="+1 (415) 000-0000" autocomplete="tel">
+      </div>
+
+      <div class="field">
+        <label for="f-linkedin">LinkedIn</label>
+        <input id="f-linkedin" type="text" placeholder="linkedin.com/in/yourname">
+        <span class="field-hint">Paste full URL or just your handle</span>
+      </div>
+
+      <div class="form-footer">
+        <div class="btn-row">
+          <button class="btn-copy" id="copy-rich-btn" onclick="copyRich()">Copy Signature</button>
+          <button class="btn-secondary" id="copy-html-btn" onclick="copyHTML()">Copy HTML</button>
+        </div>
+        <p class="copy-note">
+          Copy Signature → paste directly into Gmail, Outlook, etc.<br>
+          Copy HTML → paste into an HTML signature field
+        </p>
+      </div>
+
+    </aside>
+
+    <!-- ── Preview ── -->
+    <section class="preview-panel">
+      <div class="preview-label">Live preview</div>
+
+      <div class="email-chrome">
+        <div class="email-chrome-bar">
+          <div class="dot dot-r"></div>
+          <div class="dot dot-y"></div>
+          <div class="dot dot-g"></div>
+        </div>
+        <div class="email-body">
+          <p class="email-body-text">
+            <span>Hi there,</span><br><br>
+            <span>Thanks for reaching out. Here's my reply to your question — I've included some thoughts below and would love to connect further.</span><br><br>
+            <span>Best,</span>
+          </p>
+          <hr class="sig-divider">
+          <div id="sig-preview-wrapper"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // ── Build the clean, email-safe signature HTML ──
+    function buildSignatureHTML(data) {
+      const { name, title, email, phone, linkedin } = data;
+
+      // Normalise LinkedIn
+      let liHref = '';
+      let liDisplay = '';
+      if (linkedin.trim()) {
+        const raw = linkedin.trim().replace(/\/$/, '');
+        if (raw.startsWith('http')) {
+          liHref = raw;
+          liDisplay = raw.replace(/^https?:\/\/(www\.)?/i, '');
+        } else if (raw.startsWith('linkedin.com')) {
+          liHref = 'https://' + raw;
+          liDisplay = raw;
+        } else {
+          liHref = 'https://linkedin.com/in/' + raw.replace(/^\//, '');
+          liDisplay = 'linkedin.com/in/' + raw.replace(/^\//, '');
+        }
+      }
+
+      // Only render rows that have values
+      function row(abbr, content) {
+        if (!content) return '';
+        return `
+          <tr>
+            <td style="font-family:'Courier New',Courier,monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.06em;color:#C3C1BB;padding-right:10px;vertical-align:middle;white-space:nowrap;">${abbr}</td>
+            <td style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#706F6B;vertical-align:middle;">${content}</td>
+          </tr>
+          <tr><td colspan="2" style="height:5px;"></td></tr>`;
+      }
+
+      const emailRow = email ? row('E',
+        `<a href="mailto:${email}" style="color:#D13119;text-decoration:none;">${email}</a>`
+      ) : '';
+
+      const phoneRow = phone ? row('P/WA',
+        `<span style="color:#706F6B;">${phone}</span>`
+      ) : '';
+
+      const liRow = liHref ? row('LI',
+        `<a href="${liHref}" style="color:#706F6F;text-decoration:none;">My LinkedIn Profile</a>`
+      ) : '';
+
+      const hasContact = email || phone || liHref;
+
+      return `<table cellpadding="0" cellspacing="0" border="0" width="500" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background:#ffffff;">
+  <tr>
+    <td colspan="3" style="height:2px;background-color:#D13119;line-height:2px;font-size:0;"></td>
+  </tr>
+  <tr>
+    <td style="padding:18px 0 18px 0;vertical-align:middle;width:200px;white-space:nowrap;">
+      <div style="font-size:18px;font-weight:500;letter-spacing:-0.05em;color:#171212;line-height:1;margin-bottom:5px;">${name || 'Your Name'}</div>
+      <div style="font-family:'Courier New',Courier,monospace;font-size:10px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;color:#93918A;">${title || 'Your Title'}</div>
+    </td>
+    ${hasContact ? `
+    <td style="width:1px;background-color:#D13119;padding:0;opacity:0.3;"> </td>
+    <td style="padding:18px 0 18px 24px;vertical-align:middle;">
+      <table cellpadding="0" cellspacing="0" border="0">
+        ${emailRow}${phoneRow}${liRow}
+      </table>
+    </td>` : '<td></td><td></td>'}
+  </tr>
+  <tr>
+    <td colspan="3" style="height:1px;background-color:#C3C1BB;line-height:1px;font-size:0;opacity:0.5;"></td>
+  </tr>
+</table>`;
+    }
+
+    // ── Gather form values ──
+    function getFormData() {
+      return {
+        name:     document.getElementById('f-name').value,
+        title:    document.getElementById('f-title').value,
+        email:    document.getElementById('f-email').value,
+        phone:    document.getElementById('f-phone').value,
+        linkedin: document.getElementById('f-linkedin').value,
+      };
+    }
+
+    // ── Update live preview ──
+    function updatePreview() {
+      const html = buildSignatureHTML(getFormData());
+      document.getElementById('sig-preview-wrapper').innerHTML = html;
+    }
+
+    // ── Copy as rich text (paste directly into email client) ──
+    function copyRich() {
+      const html = buildSignatureHTML(getFormData());
+      const btn = document.getElementById('copy-rich-btn');
+      const confirm = (label) => {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = label; btn.classList.remove('copied'); }, 2000);
+      };
+      if (navigator.clipboard && window.ClipboardItem) {
+        const blob = new Blob([html], { type: 'text/html' });
+        navigator.clipboard.write([new ClipboardItem({ 'text/html': blob })])
+          .then(() => confirm('Copy Signature'))
+          .catch(() => fallbackCopyRich(html, confirm));
+      } else {
+        fallbackCopyRich(html, confirm);
+      }
+    }
+
+    function fallbackCopyRich(html, confirm) {
+      const el = document.createElement('div');
+      el.innerHTML = html;
+      el.style.position = 'fixed';
+      el.style.opacity = '0';
+      document.body.appendChild(el);
+      const range = document.createRange();
+      range.selectNode(el);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+      document.execCommand('copy');
+      window.getSelection().removeAllRanges();
+      document.body.removeChild(el);
+      confirm('Copy Signature');
+    }
+
+    // ── Copy raw HTML string ──
+    function copyHTML() {
+      const html = buildSignatureHTML(getFormData());
+      const btn = document.getElementById('copy-html-btn');
+      const confirm = () => {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy HTML'; btn.classList.remove('copied'); }, 2000);
+      };
+      navigator.clipboard.writeText(html).then(confirm).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = html;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        confirm();
+      });
+    }
+
+    // ── Wire up inputs ──
+    ['f-name','f-title','f-email','f-phone','f-linkedin'].forEach(id => {
+      document.getElementById(id).addEventListener('input', updatePreview);
+    });
+
+    // ── Initial render ──
+    updatePreview();
+  </script>
+
+</body>
+</html>
